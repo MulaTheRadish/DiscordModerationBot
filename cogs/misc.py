@@ -16,7 +16,7 @@ class Embed_Generator(ui.View, title = 'Embed Generator'):
 	
 	@ui.select(cls = ui.ChannelSelect, placeholder = "Select a channel please!", channel_types=[discord.ChannelType.text])
 	async def my_user_select(self, interaction: Interaction, select: ui.ChannelSelect):
-		print(self.channel)
+		print(self.channel)##INCOMPLETE
 
 class MiscCog(commands.Cog, name = 'Misc'):
 	def __init__(self, bot):
