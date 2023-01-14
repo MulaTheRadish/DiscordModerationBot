@@ -53,19 +53,21 @@ class MiscCog(commands.Cog, name = 'Misc'):
 	async def banner(self, ctx, user: discord.User = None):
 		if user is None: 
 			user = ctx.message.author
+		user = await self.bot.fetch_user(user.id)
+
 		colour_string = f"{user.accent_colour}"
 		embed = discord.Embed(colour = user.accent_colour)
-		embed.set_footer(text = colour_string)
 		if user.banner:
 			embed.set_image(url = user.banner.url)
 			await ctx.send(embed = embed)
 		else:
 			banner = Image.new(mode = "RGB", size = (600, 240), color = hex_to_rgb(colour_string[1:]))
-			with BytesIO as image_binary:
-				banner.save(image_binary, 'PNG')
-				image_binary.seek(0)
-				file = discord.file(fp = image_binary, filename = "banner.png")
-				await ctx.send(file = file, embed = embed)
+			bytes = BytesIO()
+			banner.save(bytes, format = "PNG")
+			bytes.seek(0)
+			file = discord.File(bytes, filename = "banner.png")
+			embed.set_image(url = "attachment://banner.png")
+			await ctx.send(file = file, embed = embed)
 	
 async def setup(bot: commands.Bot):
 	await bot.add_cog(MiscCog(bot))
