@@ -1,4 +1,5 @@
 import discord
+from discord import ui
 from discord.ext import commands
 from PIL import Image
 from io import BytesIO
@@ -12,20 +13,51 @@ def hex_to_rgb(hex):
 		rgb.append(decimal)
 	return tuple(rgb)
 
-class Embed_Generator(ui.View, title = 'Embed Generator'):
-	
-	@ui.select(cls = ui.ChannelSelect, placeholder = "Select a channel please!", channel_types=[discord.ChannelType.text])
-	async def my_user_select(self, interaction: Interaction, select: ui.ChannelSelect):
-		print(self.channel)##INCOMPLETE
+class EmbedGen(ui.Modal, title = 'Embed Generator'):
+	embed_title = ui.TextInput(
+		label = 'Title',
+		placeholder = 'Title Text',
+		style = discord.TextStyle.short,
+		required = False
+	)
+	embed_description = ui.TextInput(
+		label = "Description",
+		placeholder = "Description Text",
+		required = False
+	)
+	embed_colour = ui.TextInput(
+		label = "Colour",
+		placeholder = "#FFFFFFF",
+		style = discord.TextStyle.short,
+		required = False
+	)
+	embed_footer = ui.TextInput(
+		label = "Footer",
+		placeholder = "Footer Text",
+		style = discord.TextStyle.short,
+		required = False
+	)
+
+	async def on_submit(self, interaction: discord.Interaction):
+		colour_input = f"{self.embed_colour}"
+		embed = discord.Embed(
+			title = self.embed_title, 
+			description = self.embed_description, 
+			colour = discord.Colour.from_str(colour_input)
+			)
+		if self.embed_footer:
+			embed.set_footer(text = self.embed_footer)
+		await interaction.response.send_message("Your embed has been created!!", ephemeral = True)
+		await interaction.channel.send(embed = embed)
 
 class MiscCog(commands.Cog, name = 'Misc'):
 	def __init__(self, bot):
 		self.bot = bot
-
-	@discord.app_commands.command(name = "embed", description = "Create an embed in any specified channel.")
+	
+	@discord.app_commands.command(name = "embed", description = "Create an embed")
 	@discord.app_commands.checks.has_permissions(manage_messages = True)
 	async def embed(self, interaction: discord.Interaction):
-		await interaction.response.send_modal(Embed_Generator())
+		await interaction.response.send_modal(EmbedGen())
 
 	@commands.command()
 	async def count(self, ctx):
