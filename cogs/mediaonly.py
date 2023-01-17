@@ -27,7 +27,6 @@ class MOCog(commands.GroupCog, name = 'mo'):
     @discord.app_commands.checks.has_permissions(manage_channels = True)
     async def remove(self, interaction: discord.Interaction, channel:discord.TextChannel):
         db = sqlite3.connect('main.db')
-        db.row_factory = lambda cursor, row: row[0]
         cursor = db.cursor()
         result = cursor.execute(f"SELECT channel_id FROM media_only WHERE guild_id = {interaction.guild.id}").fetchall()
         if channel.id in result[0]:
@@ -53,7 +52,7 @@ class MOCog(commands.GroupCog, name = 'mo'):
         db = sqlite3.connect('main.db')
         cursor = db.cursor()
         result = cursor.execute(f"SELECT channel_id FROM media_only WHERE guild_id = {channel.guild.id}").fetchall()
-        if channel.id in result:
+        if channel.id in result[0]:
             cursor.execute(f"DELETE channel_id FROM media_only WHERE channel_id = {channel.id}")
         db.commit()
         cursor.close()
