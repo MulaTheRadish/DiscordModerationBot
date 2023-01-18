@@ -43,7 +43,7 @@ class MOCog(commands.GroupCog, name = 'mo'):
         db = sqlite3.connect('main.db')
         cursor = db.cursor()
         result = cursor.execute(f"SELECT channel_id FROM media_only WHERE guild_id = {message.guild.id}").fetchall()
-        if message.channel.id in result:
+        if message.channel.id in result[0]:
             if not message.attachments or 'https://' not in message.content or not message.author.bot:
                 await message.delete()
         
