@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 import os
+import config
 
 class MyBot(commands.Bot):
 
@@ -31,4 +32,4 @@ async def shutdown(message):
     else:
         return
 
-bot.run(TOKEN)
+bot.run(config.token)
