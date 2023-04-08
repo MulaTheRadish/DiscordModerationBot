@@ -12,8 +12,8 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 		db = sqlite3.connect('main.db')
 		cursor = db.cursor()
 		if '<:' in str(reaction.emoji):
-			cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{reaction.guild_id}' and message_id = '{reaction.message_id}' and emoji = '{reaction.emoji}'")
-			guild = self.bot.get_guild(reaction.guild_id)
+			cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{reaction.guildID}' and messageID = '{reaction.messageID}' and emoji = '{reaction.emoji}'")
+			guild = self.bot.get_guild(reaction.guildID)
 			result = cursor.fetchone()
 			if result is None: 
 				return
@@ -24,8 +24,8 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 			else:
 				return
 		elif '<:' not in str(reaction.emoji):
-			cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{reaction.guild_id}' and message_id = '{reaction.message_id}' and emoji = '{reaction.emoji}'")
-			guild = self.bot.get_guild(reaction.guild_id)
+			cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{reaction.guildID}' and messageID = '{reaction.messageID}' and emoji = '{reaction.emoji}'")
+			guild = self.bot.get_guild(reaction.guildID)
 			result = cursor.fetchone()
 			if result is None:
 				return
@@ -41,8 +41,8 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 		db = sqlite3.connect('main.db')	
 		cursor = db.cursor()
 		if '<:' in str(reaction.emoji):
-			cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{reaction.guild_id}' and message_id = '{reaction.message_id}' and emoji = '{reaction.emoji}'")
-			guild = self.bot.get_guild(reaction.guild_id)
+			cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{reaction.guildID}' and messageID = '{reaction.messageID}' and emoji = '{reaction.emoji}'")
+			guild = self.bot.get_guild(reaction.guildID)
 			result = cursor.fetchone()
 			if result is None: 
 				return
@@ -53,8 +53,8 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 			else:
 				return
 		elif '<:' not in str(reaction.emoji):
-			cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{reaction.guild_id}' and message_id = '{reaction.message_id}' and emoji = '{reaction.emoji}'")
-			guild = self.bot.get_guild(reaction.guild_id)
+			cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{reaction.guildID}' and messageID = '{reaction.messageID}' and emoji = '{reaction.emoji}'")
+			guild = self.bot.get_guild(reaction.guildID)
 			result = cursor.fetchone()
 			if result is None: 
 				return
@@ -70,19 +70,19 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 	async def roleadd(self, interaction: discord.Interaction, channel:discord.TextChannel, messageid: str, emoji: str, role:discord.Role):
 		db = sqlite3.connect('main.db')
 		cursor = db.cursor()
-		cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{interaction.guild.id}' and message_id = '{messageid}'")
+		cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{interaction.guild.id}' and messageID = '{messageid}'")
 		result = cursor.fetchone()
 		if '<:' in emoji:
 			emm = re.sub(':.*?:', '', emoji).strip('<>')
 			if result is None:
-				sql = ("INSERT INTO reaction(emoji, role, message_id, rxnchannel_id, guild_id) VALUES(?, ?, ?, ?, ?)")
+				sql = ("INSERT INTO reactionTable(emoji, role, messageID, channelID, guildID) VALUES(?, ?, ?, ?, ?)")
 				VAL = (emm, role.id, messageid, channel.id, interaction.guild.id)
 				msg = await channel.fetch_message(messageid)
 				em = self.bot.get_emoji(emm)
 				await msg.add_reaction(em)
 				await interaction.response.send_message(f"{emoji} has been added.")
 			elif str(messageid) not in str(result[3]):
-				sql = ("INSERT INTO reaction(emoji, role, message_id, rxnchannel_id, guild_id) VALUES(?, ?, ?, ?, ?)")
+				sql = ("INSERT INTO reactionTable(emoji, role, messageID, channelID, guildID) VALUES(?, ?, ?, ?, ?)")
 				VAL = (emm, role.id, messageid, channel.id, interaction.guild.id)
 				msg = await channel.fetch_message(messageid)
 				em = self.bot.get_emoji(emm)
@@ -90,13 +90,13 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 				await interaction.response.send_message(f"{emoji} has been added.")
 		elif '<:' not in emoji:
 			if result is None:
-				sql = ("INSERT INTO reaction(emoji, role, message_id, rxnchannel_id, guild_id) VALUES(?, ?, ?, ?, ?)")
+				sql = ("INSERT INTO reactionTable(emoji, role, messageID, channelID, guildID) VALUES(?, ?, ?, ?, ?)")
 				VAL = (emoji, role.id, messageid, channel.id, interaction.guild.id)
 				msg = await channel.fetch_message(messageid)
 				await msg.add_reaction(emoji)
 				await interaction.response.send_message(f"{emoji} has been added.")
 			elif str(messageid) not in str(result[3]):
-				sql = ("INSERT INTO reaction(emoji, role, message_id, rxnchannel_id, guild_id) VALUES(?, ?, ?, ?, ?)")
+				sql = ("INSERT INTO reactionTable(emoji, role, messageID, channelID, guildID) VALUES(?, ?, ?, ?, ?)")
 				VAL = (emoji, role.id, messageid, channel.id, interaction.guild.id)
 				msg = await channel.fetch_message(messageid)
 				await msg.add_reaction(emoji)
@@ -111,14 +111,14 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 	async def roleremove(self, interaction: discord.Interaction, messageid: str, emoji: str):
 		db = sqlite3.connect('main.db')
 		cursor = db.cursor()
-		cursor.execute(f"SELECT emoji, role, message_id, rxnchannel_id FROM reaction WHERE guild_id = '{interaction.guild.id}' and message_id = '{messageid}'")
+		cursor.execute(f"SELECT emoji, role, messageID, channelID FROM reactionTable WHERE guildID = '{interaction.guild.id}' and messageID = '{messageid}'")
 		result = cursor.fetchone()
 		if '<:' in emoji:
 			emm = re.sub(':.*?:', '', emoji).strip('<>')
 			if result is None: 
 				await interaction.response.send_message('That reaction was not found on that message.')
 			elif str(messageid) in str(result[2]):
-				cursor.execute(f"DELETE FROM reaction WHERE guild_id = '{interaction.guild.id}' and message_id = '{messageid}' and emoji = '{emm}'")
+				cursor.execute(f"DELETE FROM reactionTable WHERE guildID = '{interaction.guild.id}' and messageID = '{messageid}' and emoji = '{emm}'")
 				await interaction.response.send_message('Reaction has been removed.')
 			else:
 				await interaction.response.send_message('That reaction was not found on that message.')
@@ -126,7 +126,7 @@ class RxnCog(commands.GroupCog, name = 'reactionrole'):
 			if result is None: 
 				await interaction.response.send_message('That reaction was not found on that message.')
 			elif str(messageid) in str(result[2]):
-				cursor.execute(f"DELETE FROM reaction WHERE guild_id = '{interaction.guild.id}' and message_id = '{messageid}' and emoji = '{emoji}'")
+				cursor.execute(f"DELETE FROM reactionTable WHERE guildID = '{interaction.guild.id}' and messageID = '{messageid}' and emoji = '{emoji}'")
 				await interaction.response.send_message('Reaction has been removed.')
 			else:
 				await interaction.response.send_message('That reaction was not found on that message.')

@@ -18,7 +18,7 @@ class QueryCog(commands.Cog):
         if query.value == 'autorole':
             db = sqlite3.connect('main.db')
             cursor = db.cursor()
-            result = cursor.execute(f"SELECT autorole_user_id, autorole_bot_id FROM main WHERE guild_id = {interaction.guild.id}").fetchone()
+            result = cursor.execute(f"SELECT autoroleUserID, autoroleBotID FROM autoroleTable WHERE guild_id = {interaction.guild.id}").fetchone()
             if result is None:
                 embed = discord.Embed(title = "Neither bots nor users will be assigned new roles.")
                 embed.set_thumbnail(url=f"{interaction.guild.icon.url}")
@@ -38,7 +38,7 @@ class QueryCog(commands.Cog):
             description = ""
             db = sqlite3.connect('main.db')
             cursor = db.cursor()
-            result = cursor.execute(f"SELECT channel_id FROM media_only WHERE guild_id = {interaction.guild.id}").fetchall()
+            result = cursor.execute(f"SELECT channelID FROM mediaOnlyTable WHERE guildID = {interaction.guild.id}").fetchall()
             for channel in result:
                 description += f"<#{channel[0]}>\n"
             embed = discord.Embed(title = "Current Media Only Channels:", description = description)

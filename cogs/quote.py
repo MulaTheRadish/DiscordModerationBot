@@ -10,7 +10,7 @@ class QuoteCog(commands.GroupCog, name = 'quote'):
 	async def quote(self, ctx):
 		db = sqlite3.connect('main.db')
 		cursor = db.cursor()
-		result = cursor.execute(f"SELECT quote_ch_id FROM main WHERE guild_id = {ctx.guild.id}").fetchone()
+		result = cursor.execute(f"SELECT quoteChannelID FROM main WHERE guildID = {ctx.guild.id}").fetchone()
 		if result is None:
 			await ctx.send("No designated channel for quotes.")
 		else:
@@ -31,13 +31,13 @@ class QuoteCog(commands.GroupCog, name = 'quote'):
 	async def set(self, interaction: discord.Interaction, channel: discord.TextChannel):
 		db = sqlite3.connect('main.db')
 		cursor = db.cursor()
-		result = cursor.execute(f"SELECT quote_ch_id FROM main WHERE guild_id = {interaction.guild.id}").fetchone()
+		result = cursor.execute(f"SELECT quoteChannelID FROM main WHERE guildID = {interaction.guild.id}").fetchone()
 		if result is None:
-			sql = ("INSERT INTO main(guild_id, quote_ch_id) VALUES(?, ?)")
+			sql = ("INSERT INTO main(guildID, quoteChannelID) VALUES(?, ?)")
 			val = (interaction.guild.id, channel.id)
 			await interaction.response.send_message(f"Quote channel has been set to {channel.mention}")
 		else:
-			sql = ("UPDATE main SET quote_ch_id = ? WHERE guild_id = ?")
+			sql = ("UPDATE main SET quoteChannelID = ? WHERE guildID = ?")
 			val = (channel.id, interaction.guild.id)
 			await interaction.response.send_message(f"Quote channel has been updated to {channel.mention}")
 		cursor.execute(sql,val)

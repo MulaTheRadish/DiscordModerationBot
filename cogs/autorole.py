@@ -14,37 +14,32 @@ class AutoCog(commands.GroupCog, name = 'autorole', description = 'Automatically
         db = sqlite3.connect('main.db')
         cursor = db.cursor()
         if member.bot:
-            result = cursor.execute(f"SELECT autorole_bot_id FROM main WHERE guild_id = {member.guild.id}").fetchone()
-            if result[0] is None:
-                return
-            else:
-                autorole = discord.utils.get(member.guild.roles, id = result[0])
-                await member.add_roles(autorole)
+            result = cursor.execute(f"SELECT autoroleBotID FROM autoroleTable WHERE guildID = {member.guild.id}").fetchone()
         else:
-            result = cursor.execute(f"SELECT autorole_user_id FROM main WHERE guild_id = {member.guild.id}").fetchone()
-            if result[0] is None:
-                return
-            else:
-                autorole = discord.utils.get(member.guild.roles, id = result[0])
-                await member.add_roles(autorole)
+            result = cursor.execute(f"SELECT autoroleUserID FROM autoroleTable WHERE guildID = {member.guild.id}").fetchone()
+        if result[0] is None:
+            return
+        else:
+            autorole = discord.utils.get(member.guild.roles, id = result[0])
+            await member.add_roles(autorole)
 
     @discord.app_commands.command(name = "set", description = "Sets the role which will be assigned to new members/ bots.")
     @discord.app_commands.checks.has_permissions(manage_roles = True)
     @discord.app_commands.choices(member = [
-        app_commands.Choice(name = 'Bots', value = 'bot'),
-        app_commands.Choice(name = 'Users', value = 'user')
+        app_commands.Choice(name = 'Bots', value = 'autoroleBotID'),
+        app_commands.Choice(name = 'Users', value = 'autoroleUserID')
     ])
     async def set(self, interaction: discord.Interaction, member: app_commands.Choice[str], role: discord.Role):
         db = sqlite3.connect('main.db')
         cursor = db.cursor()
-        result = cursor.execute(f"SELECT autorole_{member.value}_id FROM main WHERE guild_id = {interaction.guild.id}").fetchone()
+        result = cursor.execute(f"SELECT {member.value} FROM autoroleTable WHERE guildID = {interaction.guild.id}").fetchone()
         if result is None:
-            sql = (f"INSERT INTO main(autorole_{member.value}_id, guild_id) VALUES(?, ?)")
+            sql = (f"INSERT INTO autoroleTable({member.value}, guildID) VALUES(?, ?)")
             val = (role.id, interaction.guild.id)
         if result is not None: 
-            sql = (f"UPDATE main SET autorole_{member.value}_id = ? WHERE guild_id = ?")
+            sql = (f"UPDATE autoroleTable SET {member.value} = ? WHERE guildID = ?")
             val = (role.id, interaction.guild.id)
-        embed = discord.Embed(description = f'Autorole for {member.value}s has been updated to {role.mention}', colour = 0xe53838)
+        embed = discord.Embed(description = f'Autorole for {member.name} has been updated to {role.mention}', colour = 0xe53838)
         await interaction.response.send_message(embed = embed)
         cursor.execute(sql, val)
         db.commit()
