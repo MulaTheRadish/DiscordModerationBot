@@ -15,15 +15,11 @@ class inviteCog(commands.GroupCog, name = 'invite'):
         print(interaction.user.id)
         print(interaction.guild.id)
         print(result)
-        if result[0] >= 1: 
+        if result is not None:
             await interaction.response.send_message("You only get to create 1 invite link per person in this server, of which, you've already used.", ephemeral = True)
-        else:
-            if result[0] is None: 
-                sql = (f"INSERT INTO invitesTable(guildID, userID, invitesCreated) VALUES(?, ?, ?)")
-                val = (interaction.guild.id, interaction.user.id, 1)
-            else:
-                sql = (f"UPDATE invitesTable SET invitesCreated = ? WHERE guildID = ? and userID = ?")
-                val = (result[0] + 1, interaction.guild.id, interaction.user.id)
+        else: 
+            sql = (f"INSERT INTO invitesTable(guildID, userID, invitesCreated) VALUES(?, ?, ?)")
+            val = (interaction.guild.id, interaction.user.id, 1)
             link = await interaction.channel.create_invite(max_uses = 1)
             await interaction.response.send_message(f"Your link is ready: {link}, you have a limited selection.", ephemeral = True)
             cursor.execute(sql, val)

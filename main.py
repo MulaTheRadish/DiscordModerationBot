@@ -10,7 +10,7 @@ class MyBot(commands.Bot):
 
     async def setup_hook(self):
         for filename in os.listdir('./cogs'):
-            if filename.endswith('.py'):
+            if filename.endswith('.py') and filename in config.cogsList:
                 await bot.load_extension(f'cogs.{filename[:-3]}')
         await bot.tree.sync()
 
